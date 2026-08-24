@@ -5,11 +5,9 @@ import { supabase } from "../lib/supabase";
 
 export default function Home() {
   const [showWrite, setShowWrite] = useState(false);
-
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
   const [duration, setDuration] = useState("3");
-
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -26,18 +24,15 @@ export default function Home() {
     let expiresAt = null;
 
     if (duration !== "forever") {
-      const days = Number(duration);
       const date = new Date();
-
-      date.setDate(date.getDate() + days);
-
+      date.setDate(date.getDate() + Number(duration));
       expiresAt = date.toISOString();
     }
 
     const { error: insertError } = await supabase
       .from("letters")
       .insert({
-        recipient: recipient.trim(),
+        recipient_name: recipient.trim(),
         message: message.trim(),
         expires_at: expiresAt,
         is_premium: false,
@@ -46,9 +41,7 @@ export default function Home() {
 
     if (insertError) {
       console.error(insertError);
-
       setError(insertError.message);
-
       setLoading(false);
       return;
     }
@@ -71,15 +64,9 @@ export default function Home() {
         fontFamily: "Georgia, serif",
       }}
     >
-      {/* HOME */}
       {!showWrite ? (
         <div style={{ maxWidth: "600px" }}>
-          <div
-            style={{
-              fontSize: "48px",
-              marginBottom: "16px",
-            }}
-          >
+          <div style={{ fontSize: "48px", marginBottom: "16px" }}>
             ✉️
           </div>
 
@@ -119,12 +106,7 @@ export default function Home() {
             💌 Write a Letter
           </button>
 
-          <p
-            style={{
-              marginTop: "35px",
-              fontSize: "14px",
-            }}
-          >
+          <p style={{ marginTop: "35px", fontSize: "14px" }}>
             Already have a Secret Letter?
           </p>
 
@@ -144,14 +126,8 @@ export default function Home() {
           </button>
         </div>
       ) : success ? (
-        /* SUCCESS */
         <div style={{ maxWidth: "500px" }}>
-          <div
-            style={{
-              fontSize: "60px",
-              marginBottom: "20px",
-            }}
-          >
+          <div style={{ fontSize: "60px", marginBottom: "20px" }}>
             🕊️
           </div>
 
@@ -166,8 +142,8 @@ export default function Home() {
               lineHeight: "1.7",
             }}
           >
-            Your message has been safely placed in the
-            world, waiting to find its recipient.
+            Your message has been safely placed in the world,
+            waiting to find its recipient.
           </p>
 
           <button
@@ -193,28 +169,12 @@ export default function Home() {
           </button>
         </div>
       ) : (
-        /* WRITE LETTER */
-        <div
-          style={{
-            maxWidth: "600px",
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "42px",
-              marginBottom: "12px",
-            }}
-          >
+        <div style={{ maxWidth: "600px", width: "100%" }}>
+          <div style={{ fontSize: "42px", marginBottom: "12px" }}>
             💌
           </div>
 
-          <h1
-            style={{
-              fontSize: "32px",
-              marginBottom: "8px",
-            }}
-          >
+          <h1 style={{ fontSize: "32px", marginBottom: "8px" }}>
             Write a Secret Letter
           </h1>
 
@@ -228,13 +188,10 @@ export default function Home() {
             Write something meant to find someone.
           </p>
 
-          {/* RECIPIENT */}
           <input
             type="text"
             value={recipient}
-            onChange={(e) =>
-              setRecipient(e.target.value)
-            }
+            onChange={(e) => setRecipient(e.target.value)}
             placeholder="Who is this letter for?"
             style={{
               width: "100%",
@@ -249,12 +206,9 @@ export default function Home() {
             }}
           />
 
-          {/* MESSAGE */}
           <textarea
             value={message}
-            onChange={(e) =>
-              setMessage(e.target.value)
-            }
+            onChange={(e) => setMessage(e.target.value)}
             placeholder="Write your message..."
             rows="8"
             style={{
@@ -270,103 +224,68 @@ export default function Home() {
             }}
           />
 
-          {/* DURATION */}
-          <div
-            style={{
-              marginTop: "20px",
-              textAlign: "left",
-            }}
-          >
+          <div style={{ marginTop: "20px", textAlign: "left" }}>
             <p style={{ fontWeight: "bold" }}>
               How long should this letter live?
             </p>
 
-            <label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-              }}
-            >
+            <label>
               <input
                 type="radio"
                 name="duration"
                 value="3"
                 checked={duration === "3"}
-                onChange={(e) =>
-                  setDuration(e.target.value)
-                }
+                onChange={(e) => setDuration(e.target.value)}
               />{" "}
               3 Days
             </label>
 
-            <label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-              }}
-            >
+            <br />
+
+            <label>
               <input
                 type="radio"
                 name="duration"
                 value="7"
                 checked={duration === "7"}
-                onChange={(e) =>
-                  setDuration(e.target.value)
-                }
+                onChange={(e) => setDuration(e.target.value)}
               />{" "}
               7 Days
             </label>
 
-            <label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-              }}
-            >
+            <br />
+
+            <label>
               <input
                 type="radio"
                 name="duration"
                 value="30"
                 checked={duration === "30"}
-                onChange={(e) =>
-                  setDuration(e.target.value)
-                }
+                onChange={(e) => setDuration(e.target.value)}
               />{" "}
               30 Days
             </label>
 
-            <label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-              }}
-            >
+            <br />
+
+            <label>
               <input
                 type="radio"
                 name="duration"
                 value="forever"
                 checked={duration === "forever"}
-                onChange={(e) =>
-                  setDuration(e.target.value)
-                }
+                onChange={(e) => setDuration(e.target.value)}
               />{" "}
               Forever
             </label>
           </div>
 
-          {/* ERROR */}
           {error && (
-            <p
-              style={{
-                color: "#9b2c2c",
-                marginTop: "20px",
-              }}
-            >
+            <p style={{ color: "#9b2c2c", marginTop: "20px" }}>
               {error}
             </p>
           )}
 
-          {/* CREATE */}
           <button
             onClick={createLetter}
             disabled={loading}
@@ -378,21 +297,16 @@ export default function Home() {
               padding: "16px 32px",
               borderRadius: "4px",
               fontSize: "16px",
-              cursor: loading
-                ? "wait"
-                : "pointer",
+              cursor: loading ? "wait" : "pointer",
               fontFamily: "Georgia, serif",
               opacity: loading ? 0.7 : 1,
             }}
           >
-            {loading
-              ? "Creating..."
-              : "Create Letter"}
+            {loading ? "Creating..." : "Create Letter"}
           </button>
 
           <br />
 
-          {/* BACK */}
           <button
             onClick={() => setShowWrite(false)}
             style={{
