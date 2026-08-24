@@ -74,6 +74,139 @@ export default function Home() {
       ? `${window.location.origin}/letter/${letterCode}`
       : "";
 
+  function downloadQR() {
+    const svg = document.getElementById("secret-letter-qr");
+
+    if (!svg) {
+      return;
+    }
+
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svg);
+
+    const svgBlob = new Blob(
+      [svgString],
+      {
+        type: "image/svg+xml;charset=utf-8",
+      }
+    );
+
+    const url = URL.createObjectURL(svgBlob);
+
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+
+      canvas.width = 900;
+      canvas.height = 1100;
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "#fffaf3";
+      ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      // Border
+      ctx.strokeStyle = "#d8cbbd";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(
+        30,
+        30,
+        canvas.width - 60,
+        canvas.height - 60
+      );
+
+      // SECRET LETTER
+      ctx.fillStyle = "#3d3028";
+      ctx.textAlign = "center";
+      ctx.font =
+        "600 42px 'Georgia', serif";
+
+      ctx.fillText(
+        "SECRET LETTER",
+        canvas.width / 2,
+        105
+      );
+
+      // Tagline
+      ctx.fillStyle = "#63483b";
+      ctx.font =
+        "italic 32px 'Georgia', serif";
+
+      ctx.fillText(
+        "A message meant to find you.",
+        canvas.width / 2,
+        160
+      );
+
+      // QR
+      const qrSize = 650;
+
+      ctx.drawImage(
+        image,
+        (canvas.width - qrSize) / 2,
+        210,
+        qrSize,
+        qrSize
+      );
+
+      // Scan to open
+      ctx.fillStyle = "#3d3028";
+      ctx.font =
+        "500 28px 'Georgia', serif";
+
+      ctx.fillText(
+        "Scan to open",
+        canvas.width / 2,
+        925
+      );
+
+      // Small safety message
+      ctx.fillStyle = "#6f6258";
+      ctx.font =
+        "18px Arial, sans-serif";
+
+      ctx.fillText(
+        "Keep this QR safe.",
+        canvas.width / 2,
+        970
+      );
+
+      ctx.fillText(
+        "Anyone with this QR can open the letter.",
+        canvas.width / 2,
+        1000
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+
+        const downloadUrl =
+          URL.createObjectURL(blob);
+
+        const link =
+          document.createElement("a");
+
+        link.href = downloadUrl;
+        link.download = `secret-letter-${letterCode}.png`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(downloadUrl);
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    };
+
+    image.src = url;
+  }
+
   return (
     <main className="site">
       <style jsx global>{`
@@ -93,7 +226,7 @@ export default function Home() {
           background:
             radial-gradient(
               circle at top,
-              rgba(255,255,255,0.8),
+              rgba(255, 255, 255, 0.8),
               transparent 45%
             ),
             #f5eee4;
@@ -126,9 +259,11 @@ export default function Home() {
         }
 
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0);
           }
+
           50% {
             transform: translateY(-7px);
           }
@@ -161,12 +296,22 @@ export default function Home() {
           font-family: "Cormorant Garamond", serif;
           font-size: 20px;
           cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition:
+            transform 0.2s,
+            box-shadow 0.2s;
         }
 
         .primaryButton:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(61,48,40,0.18);
+          box-shadow:
+            0 8px 20px
+              rgba(61, 48, 40, 0.18);
+        }
+
+        .primaryButton:disabled {
+          opacity: 0.65;
+          cursor: wait;
+          transform: none;
         }
 
         .secondaryArea {
@@ -192,10 +337,13 @@ export default function Home() {
 
         .formCard,
         .qrCard {
-          background: rgba(255,250,243,0.88);
+          background:
+            rgba(255, 250, 243, 0.92);
           border: 1px solid #d8cbbd;
           padding: 38px 28px;
-          box-shadow: 0 18px 45px rgba(72,54,42,0.09);
+          box-shadow:
+            0 18px 45px
+              rgba(72, 54, 42, 0.09);
         }
 
         .formTitle {
@@ -220,7 +368,9 @@ export default function Home() {
           color: #3d3028;
           padding: 15px;
           margin-bottom: 14px;
-          font-family: "Libre Baskerville", serif;
+          font-family:
+            "Libre Baskerville",
+            serif;
           font-size: 15px;
           border-radius: 2px;
           outline: none;
@@ -239,7 +389,9 @@ export default function Home() {
         .duration {
           text-align: left;
           margin: 20px 0;
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 18px;
         }
 
@@ -270,7 +422,9 @@ export default function Home() {
           background: transparent;
           border: none;
           color: #63483b;
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 18px;
           cursor: pointer;
         }
@@ -281,17 +435,21 @@ export default function Home() {
         }
 
         .successTitle {
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 42px;
           font-weight: 500;
           margin-bottom: 4px;
         }
 
         .successSubtitle {
-          font-family: "Great Vibes", cursive;
+          font-family:
+            "Great Vibes",
+            cursive;
           font-size: 30px;
           color: #63483b;
-          margin-bottom: 25px;
+          margin-bottom: 28px;
         }
 
         .qrWrapper {
@@ -299,11 +457,42 @@ export default function Home() {
           padding: 18px;
           background: white;
           border: 1px solid #d6c8ba;
-          box-shadow: 0 10px 25px rgba(60,45,35,0.08);
+          box-shadow:
+            0 10px 25px
+              rgba(60, 45, 35, 0.08);
+        }
+
+        .qrInner {
+          position: relative;
+          display: inline-block;
+          background: white;
+          padding: 8px;
+        }
+
+        .qrLabel {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform:
+            translate(-50%, -50%);
+          background: #fffaf3;
+          padding: 5px 7px;
+          font-family:
+            "Cormorant Garamond",
+            serif;
+          font-size: 10px;
+          line-height: 0.9;
+          letter-spacing: 1px;
+          font-weight: 700;
+          text-align: center;
+          color: #3d3028;
+          white-space: nowrap;
         }
 
         .brand {
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 21px;
           letter-spacing: 4px;
           font-weight: 600;
@@ -311,17 +500,87 @@ export default function Home() {
         }
 
         .brandTagline {
-          font-family: "Great Vibes", cursive;
+          font-family:
+            "Great Vibes",
+            cursive;
           font-size: 28px;
           margin-top: 5px;
           color: #63483b;
         }
 
         .code {
-          margin-top: 18px;
-          font-size: 10px;
-          opacity: 0.45;
+          margin-top: 15px;
+          font-size: 9px;
+          opacity: 0.3;
           word-break: break-all;
+        }
+
+        .downloadButton {
+          display: block;
+          margin: 28px auto 0;
+          background: #5a4034;
+          color: #fff8ef;
+          border: 1px solid #765849;
+          padding: 12px 28px;
+          border-radius: 5px;
+          font-family:
+            "Cormorant Garamond",
+            serif;
+          font-size: 17px;
+          font-weight: 500;
+          cursor: pointer;
+          box-shadow:
+            0 6px 14px
+              rgba(60, 45, 35, 0.14);
+          transition:
+            transform 0.2s,
+            background 0.2s,
+            box-shadow 0.2s;
+        }
+
+        .downloadButton:hover {
+          background: #6b4b3c;
+          transform: translateY(-2px);
+          box-shadow:
+            0 9px 18px
+              rgba(60, 45, 35, 0.2);
+        }
+
+        .downloadButton:active {
+          transform: translateY(0);
+        }
+
+        .downloadHint {
+          margin: 14px auto 0;
+          max-width: 360px;
+          font-family:
+            "Libre Baskerville",
+            serif;
+          font-size: 10px;
+          line-height: 1.7;
+          opacity: 0.5;
+        }
+
+        .anotherButton {
+          margin-top: 20px;
+          background: transparent;
+          border: 1px solid #8f7a6c;
+          color: #3d3028;
+          padding: 10px 23px;
+          border-radius: 3px;
+          font-family:
+            "Cormorant Garamond",
+            serif;
+          font-size: 17px;
+          cursor: pointer;
+          transition:
+            background 0.2s,
+            transform 0.2s;
+        }
+
+        .anotherButton:hover {
+          background: #f1e8dd;
+          transform: translateY(-1px);
         }
 
         @media (max-width: 480px) {
@@ -337,6 +596,18 @@ export default function Home() {
           .tagline {
             font-size: 38px;
           }
+
+          .successTitle {
+            font-size: 37px;
+          }
+
+          .successSubtitle {
+            font-size: 27px;
+          }
+
+          .qrWrapper {
+            padding: 12px;
+          }
         }
       `}</style>
 
@@ -348,7 +619,9 @@ export default function Home() {
             SECRET LETTER
           </div>
 
-          <h1>Keep something worth saying.</h1>
+          <h1>
+            Keep something worth saying.
+          </h1>
 
           <div className="tagline">
             A message meant to find you.
@@ -356,7 +629,9 @@ export default function Home() {
 
           <button
             className="primaryButton"
-            onClick={() => setShowWrite(true)}
+            onClick={() =>
+              setShowWrite(true)
+            }
           >
             Write a Letter
           </button>
@@ -374,7 +649,9 @@ export default function Home() {
       ) : success ? (
         <div className="container">
           <div className="qrCard">
-            <div className="successIcon">💌</div>
+            <div className="successIcon">
+              💌
+            </div>
 
             <div className="successTitle">
               Your letter is ready.
@@ -385,43 +662,20 @@ export default function Home() {
             </div>
 
             <div className="qrWrapper">
-              <div
-  style={{
-    position: "relative",
-    display: "inline-block",
-    background: "white",
-    padding: "8px",
-  }}
->
-  <QRCodeSVG
-    value={letterUrl}
-    size={220}
-    level="H"
-  />
+              <div className="qrInner">
+                <QRCodeSVG
+                  id="secret-letter-qr"
+                  value={letterUrl}
+                  size={220}
+                  level="H"
+                />
 
-  <div
-    style={{
-      position: "absolute",
-      left: "50%",
-      top: "50%",
-      transform: "translate(-50%, -50%)",
-      background: "#fffaf3",
-      padding: "5px 7px",
-      fontFamily: '"Cormorant Garamond", serif',
-      fontSize: "10px",
-      lineHeight: "0.9",
-      letterSpacing: "1px",
-      fontWeight: "700",
-      textAlign: "center",
-      color: "#3d3028",
-      whiteSpace: "nowrap",
-    }}
-  >
-    SECRET
-    <br />
-    LETTER
-  </div>
-</div>
+                <div className="qrLabel">
+                  SECRET
+                  <br />
+                  LETTER
+                </div>
+              </div>
             </div>
 
             <div className="brand">
@@ -437,10 +691,22 @@ export default function Home() {
             </div>
 
             <button
-              className="backButton"
+              className="downloadButton"
+              onClick={downloadQR}
+            >
+              ↓ Download QR
+            </button>
+
+            <div className="downloadHint">
+              Save this QR and send it to the person
+              this letter was meant to find.
+            </div>
+
+            <button
+              className="anotherButton"
               onClick={resetLetter}
             >
-              ← Back Home
+              Create Another Letter
             </button>
           </div>
         </div>
@@ -526,7 +792,9 @@ export default function Home() {
                   type="radio"
                   name="duration"
                   value="forever"
-                  checked={duration === "forever"}
+                  checked={
+                    duration === "forever"
+                  }
                   onChange={(e) =>
                     setDuration(e.target.value)
                   }
@@ -555,7 +823,9 @@ export default function Home() {
 
             <button
               className="backButton"
-              onClick={() => setShowWrite(false)}
+              onClick={() =>
+                setShowWrite(false)
+              }
             >
               ← Back
             </button>
