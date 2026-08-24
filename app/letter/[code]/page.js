@@ -6,6 +6,7 @@ import { supabase } from "../../../lib/supabase";
 export default function LetterPage({ params }) {
   const [letter, setLetter] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [opened, setOpened] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -22,7 +23,9 @@ export default function LetterPage({ params }) {
 
       if (fetchError) {
         console.error(fetchError);
-        setError("This secret letter could not be found.");
+        setError(
+          "This secret letter could not be found."
+        );
         setLoading(false);
         return;
       }
@@ -31,7 +34,9 @@ export default function LetterPage({ params }) {
         data.expires_at &&
         new Date(data.expires_at) < new Date()
       ) {
-        setError("This secret letter has expired.");
+        setError(
+          "This secret letter has expired."
+        );
         setLoading(false);
         return;
       }
@@ -51,25 +56,54 @@ export default function LetterPage({ params }) {
 
   if (loading) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "#f7f1e8",
-          color: "#3b3028",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "Georgia, serif",
-          textAlign: "center",
-          padding: "24px",
-        }}
-      >
-        <div>
-          <div style={{ fontSize: "55px" }}>🕊️</div>
+      <main className="page">
+        <style jsx>{`
+          .page {
+            min-height: 100vh;
+            background: #f5eee4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3d3028;
+            text-align: center;
+            font-family: "Cormorant Garamond", serif;
+          }
+
+          .box {
+            animation: fade 2s ease-in-out infinite alternate;
+          }
+
+          .bird {
+            font-size: 55px;
+            margin-bottom: 15px;
+          }
+
+          h1 {
+            font-size: 35px;
+            font-weight: 500;
+          }
+
+          p {
+            font-family: "Great Vibes", cursive;
+            font-size: 28px;
+          }
+
+          @keyframes fade {
+            from {
+              opacity: 0.45;
+              transform: translateY(5px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(-5px);
+            }
+          }
+        `}</style>
+
+        <div className="box">
+          <div className="bird">🕊️</div>
           <h1>Finding your letter...</h1>
-          <p>
-            Something special is making its way to you.
-          </p>
+          <p>A little message is making its way to you.</p>
         </div>
       </main>
     );
@@ -77,118 +111,321 @@ export default function LetterPage({ params }) {
 
   if (error) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "#f7f1e8",
-          color: "#3b3028",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "Georgia, serif",
-          textAlign: "center",
-          padding: "24px",
-        }}
-      >
-        <div style={{ maxWidth: "500px" }}>
-          <div style={{ fontSize: "55px" }}>🕊️</div>
+      <main className="page">
+        <style jsx>{`
+          .page {
+            min-height: 100vh;
+            background: #f5eee4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            color: #3d3028;
+            font-family: "Cormorant Garamond", serif;
+          }
 
+          .errorBox {
+            max-width: 480px;
+          }
+
+          .icon {
+            font-size: 55px;
+          }
+
+          h1 {
+            font-size: 42px;
+            font-weight: 500;
+          }
+
+          p {
+            font-size: 20px;
+          }
+        `}</style>
+
+        <div className="errorBox">
+          <div className="icon">🕊️</div>
           <h1>Oh no...</h1>
+          <p>{error}</p>
+        </div>
+      </main>
+    );
+  }
 
-          <p
-            style={{
-              fontSize: "17px",
-              fontStyle: "italic",
-              lineHeight: "1.7",
-            }}
-          >
-            {error}
-          </p>
+  if (!opened) {
+    return (
+      <main className="page">
+        <style jsx>{`
+          @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Libre+Baskerville:wght@400;700&display=swap");
+
+          .page {
+            min-height: 100vh;
+            background:
+              radial-gradient(
+                circle at center,
+                rgba(255,255,255,0.75),
+                transparent 55%
+              ),
+              #f5eee4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            text-align: center;
+            color: #3d3028;
+          }
+
+          .box {
+            max-width: 560px;
+          }
+
+          .bird {
+            font-size: 50px;
+            animation: float 3s ease-in-out infinite;
+          }
+
+          .brand {
+            margin-top: 12px;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 15px;
+            letter-spacing: 5px;
+          }
+
+          h1 {
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(48px, 12vw, 75px);
+            font-weight: 500;
+            line-height: 0.95;
+            margin: 25px 0 10px;
+          }
+
+          .subtitle {
+            font-family: "Great Vibes", cursive;
+            font-size: clamp(34px, 8vw, 50px);
+            color: #63483b;
+            line-height: 1.2;
+            margin-bottom: 35px;
+          }
+
+          button {
+            background: #3d3028;
+            color: #fffaf3;
+            border: none;
+            padding: 15px 35px;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 21px;
+            cursor: pointer;
+            border-radius: 3px;
+          }
+
+          .warning {
+            margin-top: 55px;
+            font-family: "Libre Baskerville", serif;
+            font-size: 9px;
+            line-height: 1.6;
+            opacity: 0.42;
+          }
+
+          @keyframes float {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-8px);
+            }
+          }
+        `}</style>
+
+        <div className="box">
+          <div className="bird">🕊️</div>
+
+          <div className="brand">
+            SECRET LETTER
+          </div>
+
+          <h1>
+            A letter has
+            <br />
+            found its way to you.
+          </h1>
+
+          <div className="subtitle">
+            A message meant to find you.
+          </div>
+
+          <button onClick={() => setOpened(true)}>
+            Open Letter
+          </button>
+
+          <div className="warning">
+            Secret Letter will never ask for your
+            password, OTP, PIN, or banking information.
+          </div>
         </div>
       </main>
     );
   }
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#f7f1e8",
-        color: "#3b3028",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "30px 20px",
-        fontFamily: "Georgia, serif",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "650px",
-          width: "100%",
-          background: "#fffaf3",
-          padding: "40px 30px",
-          borderRadius: "10px",
-          boxShadow: "0 10px 40px rgba(59, 48, 40, 0.12)",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            fontSize: "50px",
-            marginBottom: "20px",
-          }}
-        >
-          💌
+    <main className="letterPage">
+      <style jsx>{`
+        @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Libre+Baskerville:wght@400;700&display=swap");
+
+        .letterPage {
+          min-height: 100vh;
+          background:
+            radial-gradient(
+              circle at top,
+              rgba(255,255,255,0.7),
+              transparent 50%
+            ),
+            #e8dccb;
+          display: flex;
+          justify-content: center;
+          padding: 55px 20px;
+          color: #3d3028;
+        }
+
+        .letter {
+          width: 100%;
+          max-width: 680px;
+          min-height: 650px;
+          background:
+            linear-gradient(
+              rgba(255,255,255,0.35),
+              rgba(255,255,255,0.35)
+            ),
+            #fffaf0;
+          padding: 55px clamp(28px, 8vw, 70px);
+          box-shadow:
+            0 20px 60px rgba(60,45,35,0.16);
+          position: relative;
+          animation: appear 1.2s ease-out;
+        }
+
+        .letter::before {
+          content: "";
+          position: absolute;
+          inset: 14px;
+          border: 1px solid rgba(120,90,65,0.18);
+          pointer-events: none;
+        }
+
+        .top {
+          text-align: center;
+          position: relative;
+        }
+
+        .brand {
+          font-family: "Cormorant Garamond", serif;
+          letter-spacing: 5px;
+          font-size: 13px;
+          opacity: 0.6;
+        }
+
+        .recipient {
+          font-family: "Great Vibes", cursive;
+          font-size: clamp(45px, 10vw, 65px);
+          font-weight: 400;
+          margin: 25px 0 35px;
+          color: #503b30;
+        }
+
+        .line {
+          width: 80px;
+          height: 1px;
+          background: #9b8675;
+          margin: 0 auto 35px;
+          opacity: 0.5;
+        }
+
+        .message {
+          position: relative;
+          font-family: "Great Vibes", cursive;
+          font-size: clamp(28px, 6vw, 39px);
+          line-height: 1.7;
+          text-align: left;
+          white-space: pre-wrap;
+          color: #46342b;
+          animation: messageAppear 1.5s ease-out;
+        }
+
+        .closing {
+          position: relative;
+          text-align: center;
+          margin-top: 50px;
+          font-family: "Great Vibes", cursive;
+          font-size: 35px;
+          color: #63483b;
+        }
+
+        .security {
+          position: relative;
+          text-align: center;
+          margin-top: 55px;
+          font-family: "Libre Baskerville", serif;
+          font-size: 8px;
+          line-height: 1.6;
+          opacity: 0.35;
+        }
+
+        @keyframes appear {
+          from {
+            opacity: 0;
+            transform: translateY(25px) rotate(-1deg);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) rotate(0);
+          }
+        }
+
+        @keyframes messageAppear {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .letter {
+            padding: 45px 25px;
+          }
+
+          .message {
+            font-size: 28px;
+          }
+        }
+      `}</style>
+
+      <article className="letter">
+        <div className="top">
+          <div className="brand">
+            SECRET LETTER
+          </div>
+
+          <div className="recipient">
+            For {letter.recipient_name}
+          </div>
+
+          <div className="line" />
         </div>
 
-        <p
-          style={{
-            textAlign: "center",
-            fontSize: "13px",
-            letterSpacing: "2px",
-            textTransform: "uppercase",
-            opacity: 0.6,
-          }}
-        >
-          A Secret Letter
-        </p>
-
-        <h1
-          style={{
-            textAlign: "center",
-            fontSize: "32px",
-            marginBottom: "30px",
-          }}
-        >
-          For {letter.recipient_name}
-        </h1>
-
-        <div
-          style={{
-            borderTop: "1px solid #d8cec2",
-            borderBottom: "1px solid #d8cec2",
-            padding: "30px 10px",
-            whiteSpace: "pre-wrap",
-            lineHeight: "1.9",
-            fontSize: "18px",
-          }}
-        >
+        <div className="message">
           {letter.message}
         </div>
 
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "30px",
-            fontSize: "14px",
-            fontStyle: "italic",
-            opacity: 0.7,
-          }}
-        >
-          This message was meant to find you.
-        </p>
-      </div>
+        <div className="closing">
+          A message meant to find you.
+        </div>
+
+        <div className="security">
+          Secret Letter will never ask for your
+          password, OTP, PIN, or banking information.
+        </div>
+      </article>
     </main>
   );
-          }
+    }
