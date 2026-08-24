@@ -47,9 +47,7 @@ export default function Home() {
     if (insertError) {
       console.error(insertError);
 
-      setError(
-        "Something went wrong. Please try again."
-      );
+      setError(insertError.message);
 
       setLoading(false);
       return;
