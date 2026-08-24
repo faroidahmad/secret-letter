@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "../lib/supabase";
 
 export default function Home() {
   const [showWrite, setShowWrite] = useState(false);
+
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
   const [duration, setDuration] = useState("3");
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [letterCode, setLetterCode] = useState("");
 
   async function createLetter() {
     if (!recipient.trim() || !message.trim()) {
@@ -21,37 +25,55 @@ export default function Home() {
     setLoading(true);
     setError("");
 
+    const newLetterCode = crypto
+      .randomUUID()
+      .replaceAll("-", "");
+
     let expiresAt = null;
 
     if (duration !== "forever") {
       const date = new Date();
-      date.setDate(date.getDate() + Number(duration));
+
+      date.setDate(
+        date.getDate() + Number(duration)
+      );
+
       expiresAt = date.toISOString();
     }
 
-    const letterCode =
-  crypto.randomUUID().replaceAll("-", "");
-
-const { error: insertError } = await supabase
-  .from("letters")
-  .insert({
-    recipient_name: recipient.trim(),
-    message: message.trim(),
-    expires_at: expiresAt,
-    is_premium: false,
-    is_read: false,
-    letter_code: letterCode,
-  });
+    const { error: insertError } = await supabase
+      .from("letters")
+      .insert({
+        recipient_name: recipient.trim(),
+        message: message.trim(),
+        expires_at: expiresAt,
+        is_premium: false,
+        is_read: false,
+        letter_code: newLetterCode,
+      });
 
     if (insertError) {
       console.error(insertError);
+
       setError(insertError.message);
       setLoading(false);
+
       return;
     }
 
+    setLetterCode(newLetterCode);
     setLoading(false);
     setSuccess(true);
+  }
+
+  function resetLetter() {
+    setShowWrite(false);
+    setSuccess(false);
+    setRecipient("");
+    setMessage("");
+    setDuration("3");
+    setLetterCode("");
+    setError("");
   }
 
   return (
@@ -70,7 +92,12 @@ const { error: insertError } = await supabase
     >
       {!showWrite ? (
         <div style={{ maxWidth: "600px" }}>
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>
+          <div
+            style={{
+              fontSize: "48px",
+              marginBottom: "16px",
+            }}
+          >
             ✉️
           </div>
 
@@ -110,7 +137,12 @@ const { error: insertError } = await supabase
             💌 Write a Letter
           </button>
 
-          <p style={{ marginTop: "35px", fontSize: "14px" }}>
+          <p
+            style={{
+              marginTop: "35px",
+              fontSize: "14px",
+            }}
+          >
             Already have a Secret Letter?
           </p>
 
@@ -130,34 +162,84 @@ const { error: insertError } = await supabase
           </button>
         </div>
       ) : success ? (
-        <div style={{ maxWidth: "500px" }}>
-          <div style={{ fontSize: "60px", marginBottom: "20px" }}>
-            🕊️
+        <div
+          style={{
+            maxWidth: "500px",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "50px",
+              marginBottom: "15px",
+            }}
+          >
+            💌
           </div>
 
-          <h1 style={{ fontSize: "34px" }}>
+          <h1
+            style={{
+              fontSize: "34px",
+              marginBottom: "10px",
+            }}
+          >
             Your letter is ready.
           </h1>
 
           <p
             style={{
-              fontSize: "17px",
+              fontSize: "16px",
               fontStyle: "italic",
               lineHeight: "1.7",
             }}
           >
-            Your message has been safely placed in the world,
-            waiting to find its recipient.
+            Scan this QR code to open your secret
+            letter.
           </p>
 
-          <button
-            onClick={() => {
-              setSuccess(false);
-              setShowWrite(false);
-              setRecipient("");
-              setMessage("");
-              setDuration("3");
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "25px",
+              marginBottom: "20px",
+              background: "#ffffff",
+              padding: "20px",
+              borderRadius: "10px",
             }}
+          >
+            <QRCodeSVG
+              value={letterCode}
+              size={220}
+              level="H"
+            />
+          </div>
+
+          <p
+            style={{
+              fontSize: "13px",
+              opacity: 0.7,
+              marginBottom: "8px",
+            }}
+          >
+            Your secret letter code
+          </p>
+
+          <div
+            style={{
+              background: "#fffaf3",
+              border: "1px solid #c9bfb3",
+              borderRadius: "6px",
+              padding: "12px",
+              wordBreak: "break-all",
+              fontSize: "13px",
+            }}
+          >
+            {letterCode}
+          </div>
+
+          <button
+            onClick={resetLetter}
             style={{
               marginTop: "25px",
               background: "#3b3028",
@@ -173,12 +255,27 @@ const { error: insertError } = await supabase
           </button>
         </div>
       ) : (
-        <div style={{ maxWidth: "600px", width: "100%" }}>
-          <div style={{ fontSize: "42px", marginBottom: "12px" }}>
+        <div
+          style={{
+            maxWidth: "600px",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "42px",
+              marginBottom: "12px",
+            }}
+          >
             💌
           </div>
 
-          <h1 style={{ fontSize: "32px", marginBottom: "8px" }}>
+          <h1
+            style={{
+              fontSize: "32px",
+              marginBottom: "8px",
+            }}
+          >
             Write a Secret Letter
           </h1>
 
@@ -195,7 +292,9 @@ const { error: insertError } = await supabase
           <input
             type="text"
             value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
+            onChange={(e) =>
+              setRecipient(e.target.value)
+            }
             placeholder="Who is this letter for?"
             style={{
               width: "100%",
@@ -212,7 +311,9 @@ const { error: insertError } = await supabase
 
           <textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) =>
+              setMessage(e.target.value)
+            }
             placeholder="Write your message..."
             rows="8"
             style={{
@@ -228,7 +329,12 @@ const { error: insertError } = await supabase
             }}
           />
 
-          <div style={{ marginTop: "20px", textAlign: "left" }}>
+          <div
+            style={{
+              marginTop: "20px",
+              textAlign: "left",
+            }}
+          >
             <p style={{ fontWeight: "bold" }}>
               How long should this letter live?
             </p>
@@ -239,7 +345,9 @@ const { error: insertError } = await supabase
                 name="duration"
                 value="3"
                 checked={duration === "3"}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) =>
+                  setDuration(e.target.value)
+                }
               />{" "}
               3 Days
             </label>
@@ -252,7 +360,9 @@ const { error: insertError } = await supabase
                 name="duration"
                 value="7"
                 checked={duration === "7"}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) =>
+                  setDuration(e.target.value)
+                }
               />{" "}
               7 Days
             </label>
@@ -265,7 +375,9 @@ const { error: insertError } = await supabase
                 name="duration"
                 value="30"
                 checked={duration === "30"}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) =>
+                  setDuration(e.target.value)
+                }
               />{" "}
               30 Days
             </label>
@@ -278,14 +390,22 @@ const { error: insertError } = await supabase
                 name="duration"
                 value="forever"
                 checked={duration === "forever"}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) =>
+                  setDuration(e.target.value)
+                }
               />{" "}
               Forever
             </label>
           </div>
 
           {error && (
-            <p style={{ color: "#9b2c2c", marginTop: "20px" }}>
+            <p
+              style={{
+                color: "#9b2c2c",
+                marginTop: "20px",
+                wordBreak: "break-word",
+              }}
+            >
               {error}
             </p>
           )}
@@ -301,12 +421,16 @@ const { error: insertError } = await supabase
               padding: "16px 32px",
               borderRadius: "4px",
               fontSize: "16px",
-              cursor: loading ? "wait" : "pointer",
+              cursor: loading
+                ? "wait"
+                : "pointer",
               fontFamily: "Georgia, serif",
               opacity: loading ? 0.7 : 1,
             }}
           >
-            {loading ? "Creating..." : "Create Letter"}
+            {loading
+              ? "Creating..."
+              : "Create Letter"}
           </button>
 
           <br />
@@ -328,4 +452,4 @@ const { error: insertError } = await supabase
       )}
     </main>
   );
-}
+              }
