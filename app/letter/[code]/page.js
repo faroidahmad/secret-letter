@@ -163,7 +163,9 @@ export default function LetterPage({ params }) {
 
   if (!opened) {
     return (
-      <main className="openingPage">
+      <main
+        className={`openingPage ${opening ? "opening" : ""}`}
+      >
         <style jsx>{`
           @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap");
 
@@ -230,6 +232,7 @@ export default function LetterPage({ params }) {
             box-shadow: 0 18px 35px rgba(60, 45, 35, 0.18);
             border-radius: 3px;
             overflow: hidden;
+            z-index: 4;
           }
 
           .envelope::before {
@@ -243,6 +246,8 @@ export default function LetterPage({ params }) {
             border-right: 135px solid transparent;
             border-top: 90px solid #c9ad91;
             z-index: 3;
+            transform-origin: top center;
+            transition: transform 1s ease;
           }
 
           .envelope::after {
@@ -255,7 +260,7 @@ export default function LetterPage({ params }) {
             border-left: 135px solid transparent;
             border-right: 135px solid transparent;
             border-bottom: 95px solid #d0b69a;
-            z-index: 4;
+            z-index: 5;
           }
 
           .seal {
@@ -276,6 +281,7 @@ export default function LetterPage({ params }) {
             font-size: 13px;
             letter-spacing: 1px;
             box-shadow: 0 5px 12px rgba(50, 35, 25, 0.2);
+            transition: opacity 0.5s ease, transform 0.5s ease;
           }
 
           .paper {
@@ -287,7 +293,7 @@ export default function LetterPage({ params }) {
             height: 145px;
             background: #fffaf0;
             box-shadow: 0 5px 15px rgba(50, 35, 25, 0.1);
-            transition: transform 1.7s ease;
+            transition: transform 1.8s ease;
           }
 
           .paper::before {
@@ -316,31 +322,33 @@ export default function LetterPage({ params }) {
           }
 
           .openingPage.opening .paper {
-            transform: translateY(-115px);
+            transform: translateY(-125px);
           }
 
-          .openingPage.opening .envelope {
-            animation: envelopeLift 2.3s ease forwards;
+          .openingPage.opening .envelope::before {
+            transform: rotateX(180deg);
           }
 
           .openingPage.opening .seal {
-            animation: sealFade 0.7s ease forwards;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.6);
           }
 
-          @keyframes envelopeLift {
+          .openingPage.opening .envelope {
+            animation: envelopeMove 2.3s ease forwards;
+          }
+
+          @keyframes envelopeMove {
             0% {
               transform: translateY(0);
             }
 
-            100% {
+            50% {
               transform: translateY(5px);
             }
-          }
 
-          @keyframes sealFade {
-            to {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.7);
+            100% {
+              transform: translateY(0);
             }
           }
 
@@ -353,7 +361,9 @@ export default function LetterPage({ params }) {
             font-family: "Cormorant Garamond", serif;
             font-size: 21px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition:
+              transform 0.2s,
+              opacity 0.4s;
           }
 
           button:hover {
@@ -383,11 +393,7 @@ export default function LetterPage({ params }) {
           }
         `}</style>
 
-        <div
-          className={`openingBox ${
-            opening ? "opening" : ""
-          }`}
-        >
+        <div className="openingBox">
           <div className="brand">
             SECRET LETTER
           </div>
