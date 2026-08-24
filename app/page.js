@@ -385,11 +385,43 @@ export default function Home() {
             </div>
 
             <div className="qrWrapper">
-              <QRCodeSVG
-                value={letterUrl}
-                size={220}
-                level="H"
-              />
+              <div
+  style={{
+    position: "relative",
+    display: "inline-block",
+    background: "white",
+    padding: "8px",
+  }}
+>
+  <QRCodeSVG
+    value={letterUrl}
+    size={220}
+    level="H"
+  />
+
+  <div
+    style={{
+      position: "absolute",
+      left: "50%",
+      top: "50%",
+      transform: "translate(-50%, -50%)",
+      background: "#fffaf3",
+      padding: "5px 7px",
+      fontFamily: '"Cormorant Garamond", serif',
+      fontSize: "10px",
+      lineHeight: "0.9",
+      letterSpacing: "1px",
+      fontWeight: "700",
+      textAlign: "center",
+      color: "#3d3028",
+      whiteSpace: "nowrap",
+    }}
+  >
+    SECRET
+    <br />
+    LETTER
+  </div>
+</div>
             </div>
 
             <div className="brand">
