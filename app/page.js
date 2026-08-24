@@ -29,15 +29,19 @@ export default function Home() {
       expiresAt = date.toISOString();
     }
 
-    const { error: insertError } = await supabase
-      .from("letters")
-      .insert({
-        recipient_name: recipient.trim(),
-        message: message.trim(),
-        expires_at: expiresAt,
-        is_premium: false,
-        is_read: false,
-      });
+    const letterCode =
+  crypto.randomUUID().replaceAll("-", "");
+
+const { error: insertError } = await supabase
+  .from("letters")
+  .insert({
+    recipient_name: recipient.trim(),
+    message: message.trim(),
+    expires_at: expiresAt,
+    is_premium: false,
+    is_read: false,
+    letter_code: letterCode,
+  });
 
     if (insertError) {
       console.error(insertError);
