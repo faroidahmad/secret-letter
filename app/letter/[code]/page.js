@@ -324,12 +324,13 @@ export default function LetterPage({ params }) {
         }
 
         .recipient {
-          font-family: "Great Vibes", cursive;
-          font-size: clamp(45px, 10vw, 65px);
-          font-weight: 400;
-          margin: 25px 0 35px;
-          color: #503b30;
-        }
+  font-family: "Cormorant Garamond", serif;
+  font-size: 19px;
+  font-weight: 500;
+  text-align: left;
+  margin: 0 0 30px;
+  color: #503b30;
+}
 
         .line {
           width: 80px;
@@ -360,15 +361,15 @@ export default function LetterPage({ params }) {
         }
 
         .security {
-          position: relative;
-          text-align: center;
-          margin-top: 55px;
-          font-family: "Libre Baskerville", serif;
-          font-size: 8px;
-          line-height: 1.6;
-          opacity: 0.35;
-        }
-
+  position: relative;
+  text-align: center;
+  margin-top: 55px;
+  font-family: "Libre Baskerville", serif;
+  font-size: 10px;
+  line-height: 1.7;
+  opacity: 0.55;
+}
+        
         @keyframes appear {
           from {
             opacity: 0;
@@ -407,8 +408,8 @@ export default function LetterPage({ params }) {
           </div>
 
           <div className="recipient">
-            For {letter.recipient_name}
-          </div>
+  For: {letter.recipient_name}
+</div>
 
           <div className="line" />
         </div>
@@ -417,9 +418,6 @@ export default function LetterPage({ params }) {
           {letter.message}
         </div>
 
-        <div className="closing">
-          A message meant to find you.
-        </div>
 
         <div className="security">
           Secret Letter will never ask for your
