@@ -1,4 +1,4 @@
-            "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
@@ -15,36 +15,36 @@ export default function LetterPage({ params }) {
     async function loadLetter() {
       const code = params.code;
 
-      const { data, error: fetchError } = await supabase
-        .from("letters")
-        .select(
-          "id, recipient_name, message, expires_at, is_premium, is_read"
-        )
-        .eq("letter_code", code)
-        .single();
+      const { data, error: fetchError } =
+        await supabase.rpc(
+          "get_secret_letter",
+          {
+            p_letter_code: code,
+          }
+        );
 
       if (fetchError) {
         console.error(fetchError);
-        setError("This secret letter could not be found.");
+        setError(
+          "This secret letter could not be found."
+        );
         setLoading(false);
         return;
       }
 
-      if (
-        data.expires_at &&
-        new Date(data.expires_at) < new Date()
-      ) {
-        setError("This secret letter has expired.");
+      if (!data || data.length === 0) {
+        setError(
+          "This secret letter could not be found or has expired."
+        );
         setLoading(false);
         return;
       }
 
-      setLetter(data);
+      setLetter(data[0]);
 
-      await supabase
-        .from("letters")
-        .update({ is_read: true })
-        .eq("id", data.id);
+      if (data[0].is_read) {
+        setFound(true);
+      }
 
       setLoading(false);
     }
@@ -52,8 +52,15 @@ export default function LetterPage({ params }) {
     loadLetter();
   }, [params.code]);
 
-  function openLetter() {
+  async function openLetter() {
     setOpening(true);
+
+    await supabase.rpc(
+      "mark_letter_found",
+      {
+        p_letter_id: letter.id,
+      }
+    );
 
     setTimeout(() => {
       setOpened(true);
@@ -63,10 +70,12 @@ export default function LetterPage({ params }) {
   async function markFound() {
     setFound(true);
 
-    await supabase
-      .from("letters")
-      .update({ is_read: true })
-      .eq("id", letter.id);
+    await supabase.rpc(
+      "mark_letter_found",
+      {
+        p_letter_id: letter.id,
+      }
+    );
   }
 
   if (loading) {
@@ -119,7 +128,9 @@ export default function LetterPage({ params }) {
         <div className="loadingBox">
           <div className="bird">🕊️</div>
           <h1>Finding your letter...</h1>
-          <p>A little message is making its way to you.</p>
+          <p>
+            A little message is making its way to you.
+          </p>
         </div>
       </main>
     );
@@ -174,7 +185,9 @@ export default function LetterPage({ params }) {
   if (!opened) {
     return (
       <main
-        className={`openingPage ${opening ? "opening" : ""}`}
+        className={`openingPage ${
+          opening ? "opening" : ""
+        }`}
       >
         <style jsx>{`
           @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap");
@@ -239,7 +252,9 @@ export default function LetterPage({ params }) {
             width: 270px;
             height: 170px;
             background: #d9c2a8;
-            box-shadow: 0 18px 35px rgba(60, 45, 35, 0.18);
+            box-shadow:
+              0 18px 35px
+                rgba(60, 45, 35, 0.18);
             border-radius: 3px;
             overflow: hidden;
             z-index: 4;
@@ -290,7 +305,9 @@ export default function LetterPage({ params }) {
             font-family: "Cormorant Garamond", serif;
             font-size: 13px;
             letter-spacing: 1px;
-            box-shadow: 0 5px 12px rgba(50, 35, 25, 0.2);
+            box-shadow:
+              0 5px 12px
+                rgba(50, 35, 25, 0.2);
             transition:
               opacity 0.5s ease,
               transform 0.5s ease;
@@ -304,7 +321,9 @@ export default function LetterPage({ params }) {
             width: 230px;
             height: 145px;
             background: #fffaf0;
-            box-shadow: 0 5px 15px rgba(50, 35, 25, 0.1);
+            box-shadow:
+              0 5px 15px
+                rgba(50, 35, 25, 0.1);
             transition: transform 1.8s ease;
           }
 
@@ -343,11 +362,14 @@ export default function LetterPage({ params }) {
 
           .openingPage.opening .seal {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0.6);
+            transform:
+              translate(-50%, -50%)
+              scale(0.6);
           }
 
           .openingPage.opening .envelope {
-            animation: envelopeMove 2.3s ease forwards;
+            animation:
+              envelopeMove 2.3s ease forwards;
           }
 
           @keyframes envelopeMove {
@@ -370,7 +392,9 @@ export default function LetterPage({ params }) {
             border: none;
             padding: 15px 36px;
             border-radius: 3px;
-            font-family: "Cormorant Garamond", serif;
+            font-family:
+              "Cormorant Garamond",
+              serif;
             font-size: 21px;
             cursor: pointer;
             transition:
@@ -470,7 +494,9 @@ export default function LetterPage({ params }) {
           min-height: 650px;
           background: #fffaf0;
           padding: 55px clamp(28px, 8vw, 70px);
-          box-shadow: 0 20px 60px rgba(60, 45, 35, 0.16);
+          box-shadow:
+            0 20px 60px
+              rgba(60, 45, 35, 0.16);
           position: relative;
           animation: appear 1.2s ease-out;
         }
@@ -479,7 +505,9 @@ export default function LetterPage({ params }) {
           content: "";
           position: absolute;
           inset: 14px;
-          border: 1px solid rgba(120, 90, 65, 0.18);
+          border:
+            1px solid
+            rgba(120, 90, 65, 0.18);
           pointer-events: none;
         }
 
@@ -489,14 +517,18 @@ export default function LetterPage({ params }) {
 
         .brand {
           text-align: center;
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           letter-spacing: 5px;
           font-size: 13px;
           opacity: 0.6;
         }
 
         .recipient {
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 19px;
           font-weight: 500;
           text-align: left;
@@ -514,13 +546,17 @@ export default function LetterPage({ params }) {
 
         .message {
           position: relative;
-          font-family: "Great Vibes", cursive;
-          font-size: clamp(28px, 6vw, 39px);
+          font-family:
+            "Great Vibes",
+            cursive;
+          font-size:
+            clamp(28px, 6vw, 39px);
           line-height: 1.7;
           text-align: left;
           white-space: pre-wrap;
           color: #46342b;
-          animation: messageAppear 1.5s ease-out;
+          animation:
+            messageAppear 1.5s ease-out;
         }
 
         .responseArea {
@@ -528,11 +564,15 @@ export default function LetterPage({ params }) {
           text-align: center;
           margin-top: 65px;
           padding-top: 30px;
-          border-top: 1px solid rgba(120, 90, 65, 0.15);
+          border-top:
+            1px solid
+            rgba(120, 90, 65, 0.15);
         }
 
         .responseQuestion {
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 19px;
           margin-bottom: 16px;
           color: #503b30;
@@ -543,13 +583,17 @@ export default function LetterPage({ params }) {
           color: #fff8ef;
           border: 1px solid #765849;
           padding: 10px 24px;
-          font-family: "Cormorant Garamond", serif;
+          font-family:
+            "Cormorant Garamond",
+            serif;
           font-size: 16px;
           font-weight: 500;
           letter-spacing: 0.3px;
           border-radius: 5px;
           cursor: pointer;
-          box-shadow: 0 6px 14px rgba(60, 45, 35, 0.16);
+          box-shadow:
+            0 6px 14px
+              rgba(60, 45, 35, 0.16);
           transition:
             transform 0.2s ease,
             background 0.2s ease,
@@ -559,32 +603,42 @@ export default function LetterPage({ params }) {
         .foundButton:hover {
           background: #6b4b3c;
           transform: translateY(-2px);
-          box-shadow: 0 9px 18px rgba(60, 45, 35, 0.2);
+          box-shadow:
+            0 9px 18px
+              rgba(60, 45, 35, 0.2);
         }
 
         .foundButton:active {
           transform: translateY(0);
-          box-shadow: 0 3px 8px rgba(60, 45, 35, 0.16);
+          box-shadow:
+            0 3px 8px
+              rgba(60, 45, 35, 0.16);
         }
 
         .foundMessage {
-          font-family: "Great Vibes", cursive;
+          font-family:
+            "Great Vibes",
+            cursive;
           font-size: 28px;
           color: #63483b;
-          animation: foundAppear 0.8s ease-out;
+          animation:
+            foundAppear 0.8s ease-out;
         }
 
         .heart {
           display: inline-block;
           margin-right: 6px;
-          animation: heartBeat 1.2s ease-in-out infinite;
+          animation:
+            heartBeat 1.2s ease-in-out infinite;
         }
 
         .security {
           position: relative;
           text-align: center;
           margin-top: 55px;
-          font-family: "Libre Baskerville", serif;
+          font-family:
+            "Libre Baskerville",
+            serif;
           font-size: 10px;
           line-height: 1.7;
           opacity: 0.55;
@@ -593,12 +647,16 @@ export default function LetterPage({ params }) {
         @keyframes appear {
           from {
             opacity: 0;
-            transform: translateY(25px) rotate(-1deg);
+            transform:
+              translateY(25px)
+              rotate(-1deg);
           }
 
           to {
             opacity: 1;
-            transform: translateY(0) rotate(0);
+            transform:
+              translateY(0)
+              rotate(0);
           }
         }
 
@@ -615,12 +673,14 @@ export default function LetterPage({ params }) {
         @keyframes foundAppear {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform:
+              translateY(10px);
           }
 
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform:
+              translateY(0);
           }
         }
 
@@ -701,4 +761,4 @@ export default function LetterPage({ params }) {
       </article>
     </main>
   );
-}                     
+              }
