@@ -209,10 +209,10 @@ export default function Home() {
             }}
           >
             <QRCodeSVG
-              value={letterCode}
-              size={220}
-              level="H"
-            />
+  value={`${window.location.origin}/letter/${letterCode}`}
+  size={220}
+  level="H"
+/>
           </div>
 
           <p
