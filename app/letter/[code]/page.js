@@ -1,4 +1,4 @@
-"use client";
+            "use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
@@ -454,7 +454,7 @@ export default function LetterPage({ params }) {
           background:
             radial-gradient(
               circle at top,
-              rgba(255,255,255,0.7),
+              rgba(255, 255, 255, 0.7),
               transparent 50%
             ),
             #e8dccb;
@@ -470,7 +470,7 @@ export default function LetterPage({ params }) {
           min-height: 650px;
           background: #fffaf0;
           padding: 55px clamp(28px, 8vw, 70px);
-          box-shadow: 0 20px 60px rgba(60,45,35,0.16);
+          box-shadow: 0 20px 60px rgba(60, 45, 35, 0.16);
           position: relative;
           animation: appear 1.2s ease-out;
         }
@@ -479,7 +479,7 @@ export default function LetterPage({ params }) {
           content: "";
           position: absolute;
           inset: 14px;
-          border: 1px solid rgba(120,90,65,0.18);
+          border: 1px solid rgba(120, 90, 65, 0.18);
           pointer-events: none;
         }
 
@@ -528,40 +528,48 @@ export default function LetterPage({ params }) {
           text-align: center;
           margin-top: 65px;
           padding-top: 30px;
-          border-top: 1px solid rgba(120,90,65,0.15);
+          border-top: 1px solid rgba(120, 90, 65, 0.15);
         }
 
         .responseQuestion {
           font-family: "Cormorant Garamond", serif;
-          font-size: 21px;
-          margin-bottom: 15px;
+          font-size: 19px;
+          margin-bottom: 16px;
           color: #503b30;
         }
 
         .foundButton {
-          background: transparent;
-          color: #63483b;
-          border: 1px solid #9b8675;
+          background: #5a4034;
+          color: #fff8ef;
+          border: 1px solid #765849;
           padding: 10px 24px;
           font-family: "Cormorant Garamond", serif;
-          font-size: 18px;
-          border-radius: 3px;
+          font-size: 16px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          border-radius: 5px;
           cursor: pointer;
+          box-shadow: 0 6px 14px rgba(60, 45, 35, 0.16);
           transition:
-            background 0.3s,
-            color 0.3s,
-            transform 0.2s;
+            transform 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
         }
 
         .foundButton:hover {
-          background: #63483b;
-          color: #fffaf3;
+          background: #6b4b3c;
           transform: translateY(-2px);
+          box-shadow: 0 9px 18px rgba(60, 45, 35, 0.2);
+        }
+
+        .foundButton:active {
+          transform: translateY(0);
+          box-shadow: 0 3px 8px rgba(60, 45, 35, 0.16);
         }
 
         .foundMessage {
           font-family: "Great Vibes", cursive;
-          font-size: 30px;
+          font-size: 28px;
           color: #63483b;
           animation: foundAppear 0.8s ease-out;
         }
@@ -637,7 +645,12 @@ export default function LetterPage({ params }) {
           }
 
           .responseQuestion {
-            font-size: 19px;
+            font-size: 18px;
+          }
+
+          .foundButton {
+            font-size: 15px;
+            padding: 9px 21px;
           }
         }
       `}</style>
@@ -688,4 +701,4 @@ export default function LetterPage({ params }) {
       </article>
     </main>
   );
-}
+}                     
