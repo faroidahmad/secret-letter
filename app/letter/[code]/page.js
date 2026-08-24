@@ -8,6 +8,7 @@ export default function LetterPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [opened, setOpened] = useState(false);
   const [opening, setOpening] = useState(false);
+  const [found, setFound] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -57,6 +58,15 @@ export default function LetterPage({ params }) {
     setTimeout(() => {
       setOpened(true);
     }, 2300);
+  }
+
+  async function markFound() {
+    setFound(true);
+
+    await supabase
+      .from("letters")
+      .update({ is_read: true })
+      .eq("id", letter.id);
   }
 
   if (loading) {
@@ -281,7 +291,9 @@ export default function LetterPage({ params }) {
             font-size: 13px;
             letter-spacing: 1px;
             box-shadow: 0 5px 12px rgba(50, 35, 25, 0.2);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition:
+              opacity 0.5s ease,
+              transform 0.5s ease;
           }
 
           .paper {
@@ -511,6 +523,55 @@ export default function LetterPage({ params }) {
           animation: messageAppear 1.5s ease-out;
         }
 
+        .responseArea {
+          position: relative;
+          text-align: center;
+          margin-top: 65px;
+          padding-top: 30px;
+          border-top: 1px solid rgba(120,90,65,0.15);
+        }
+
+        .responseQuestion {
+          font-family: "Cormorant Garamond", serif;
+          font-size: 21px;
+          margin-bottom: 15px;
+          color: #503b30;
+        }
+
+        .foundButton {
+          background: transparent;
+          color: #63483b;
+          border: 1px solid #9b8675;
+          padding: 10px 24px;
+          font-family: "Cormorant Garamond", serif;
+          font-size: 18px;
+          border-radius: 3px;
+          cursor: pointer;
+          transition:
+            background 0.3s,
+            color 0.3s,
+            transform 0.2s;
+        }
+
+        .foundButton:hover {
+          background: #63483b;
+          color: #fffaf3;
+          transform: translateY(-2px);
+        }
+
+        .foundMessage {
+          font-family: "Great Vibes", cursive;
+          font-size: 30px;
+          color: #63483b;
+          animation: foundAppear 0.8s ease-out;
+        }
+
+        .heart {
+          display: inline-block;
+          margin-right: 6px;
+          animation: heartBeat 1.2s ease-in-out infinite;
+        }
+
         .security {
           position: relative;
           text-align: center;
@@ -543,6 +604,29 @@ export default function LetterPage({ params }) {
           }
         }
 
+        @keyframes foundAppear {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes heartBeat {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+
+          50% {
+            transform: scale(1.18);
+          }
+        }
+
         @media (max-width: 480px) {
           .letter {
             padding: 45px 25px;
@@ -550,6 +634,10 @@ export default function LetterPage({ params }) {
 
           .message {
             font-size: 28px;
+          }
+
+          .responseQuestion {
+            font-size: 19px;
           }
         }
       `}</style>
@@ -569,6 +657,28 @@ export default function LetterPage({ params }) {
 
         <div className="message">
           {letter.message}
+        </div>
+
+        <div className="responseArea">
+          {!found ? (
+            <>
+              <div className="responseQuestion">
+                Did this letter find you?
+              </div>
+
+              <button
+                className="foundButton"
+                onClick={markFound}
+              >
+                ♡ It found me
+              </button>
+            </>
+          ) : (
+            <div className="foundMessage">
+              <span className="heart">♡</span>
+              This letter found you.
+            </div>
+          )}
         </div>
 
         <div className="security">
