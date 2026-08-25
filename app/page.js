@@ -74,117 +74,182 @@ export default function Home() {
       ? `${window.location.origin}/letter/${letterCode}`
       : "";
 
-  function downloadQR() {
-    const svg = document.getElementById("secret-letter-qr");
+function downloadQR() {
+  const svg = document.getElementById("secret-letter-qr");
 
-    if (!svg) {
+  if (!svg) {
+    return;
+  }
+
+  const serializer = new XMLSerializer();
+  const svgString = serializer.serializeToString(svg);
+
+  const svgBlob = new Blob(
+    [svgString],
+    {
+      type: "image/svg+xml;charset=utf-8",
+    }
+  );
+
+  const url = URL.createObjectURL(svgBlob);
+  const image = new Image();
+
+  image.onload = () => {
+    const canvas = document.createElement("canvas");
+
+    canvas.width = 900;
+    canvas.height = 1100;
+
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      URL.revokeObjectURL(url);
       return;
     }
 
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svg);
-
-    const svgBlob = new Blob(
-      [svgString],
-      {
-        type: "image/svg+xml;charset=utf-8",
-      }
+    // Background
+    ctx.fillStyle = "#fffaf3";
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
     );
 
-    const url = URL.createObjectURL(svgBlob);
+    // Border
+    ctx.strokeStyle = "#d8cbbd";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(
+      30,
+      30,
+      canvas.width - 60,
+      canvas.height - 60
+    );
 
-    const image = new Image();
+    // SECRET LETTER
+    ctx.fillStyle = "#3d3028";
+    ctx.textAlign = "center";
+    ctx.font =
+      "600 42px Georgia, serif";
 
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
+    ctx.fillText(
+      "SECRET LETTER",
+      canvas.width / 2,
+      105
+    );
 
-      canvas.width = 900;
-      canvas.height = 1100;
+    // Tagline
+    ctx.fillStyle = "#63483b";
+    ctx.font =
+      "italic 32px Georgia, serif";
 
-      const ctx = canvas.getContext("2d");
+    ctx.fillText(
+      "A message meant to find you.",
+      canvas.width / 2,
+      160
+    );
 
-      ctx.fillStyle = "#fffaf3";
-      ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+    // QR
+    const qrSize = 650;
+    const qrX =
+      (canvas.width - qrSize) / 2;
+    const qrY = 210;
 
-      // Border
-      ctx.strokeStyle = "#d8cbbd";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(
-        30,
-        30,
-        canvas.width - 60,
-        canvas.height - 60
-      );
+    ctx.drawImage(
+      image,
+      qrX,
+      qrY,
+      qrSize,
+      qrSize
+    );
 
-      // SECRET LETTER
-      ctx.fillStyle = "#3d3028";
-      ctx.textAlign = "center";
-      ctx.font =
-        "600 42px 'Georgia', serif";
+    // =================================
+    // SECRET LETTER DI DALAM QR
+    // =================================
 
-      ctx.fillText(
-        "SECRET LETTER",
-        canvas.width / 2,
-        105
-      );
+    const labelWidth = 150;
+    const labelHeight = 70;
 
-      // Tagline
-      ctx.fillStyle = "#63483b";
-      ctx.font =
-        "italic 32px 'Georgia', serif";
+    const labelX =
+      canvas.width / 2 - labelWidth / 2;
 
-      ctx.fillText(
-        "A message meant to find you.",
-        canvas.width / 2,
-        160
-      );
+    const labelY =
+      qrY + qrSize / 2 - labelHeight / 2;
 
-      // QR
-      const qrSize = 650;
+    // Background label
+    ctx.fillStyle = "#fffaf3";
 
-      ctx.drawImage(
-        image,
-        (canvas.width - qrSize) / 2,
-        210,
-        qrSize,
-        qrSize
-      );
+    ctx.fillRect(
+      labelX,
+      labelY,
+      labelWidth,
+      labelHeight
+    );
 
-      // Scan to open
-      ctx.fillStyle = "#3d3028";
-      ctx.font =
-        "500 28px 'Georgia', serif";
+    // Border kecil
+    ctx.strokeStyle = "#d8cbbd";
+    ctx.lineWidth = 2;
 
-      ctx.fillText(
-        "Scan to open",
-        canvas.width / 2,
-        925
-      );
+    ctx.strokeRect(
+      labelX,
+      labelY,
+      labelWidth,
+      labelHeight
+    );
 
-      // Small safety message
-      ctx.fillStyle = "#6f6258";
-      ctx.font =
-        "18px Arial, sans-serif";
+    // SECRET
+    ctx.fillStyle = "#3d3028";
+    ctx.font =
+      "700 22px Georgia, serif";
 
-      ctx.fillText(
-        "Keep this QR safe.",
-        canvas.width / 2,
-        970
-      );
+    ctx.fillText(
+      "SECRET",
+      canvas.width / 2,
+      labelY + 28
+    );
 
-      ctx.fillText(
-        "Anyone with this QR can open the letter.",
-        canvas.width / 2,
-        1000
-      );
+    // LETTER
+    ctx.fillText(
+      "LETTER",
+      canvas.width / 2,
+      labelY + 52
+    );
 
-      canvas.toBlob((blob) => {
-        if (!blob) return;
+    // Scan to open
+    ctx.fillStyle = "#3d3028";
+    ctx.font =
+      "500 28px Georgia, serif";
+
+    ctx.fillText(
+      "Scan to open",
+      canvas.width / 2,
+      925
+    );
+
+    // Safety message
+    ctx.fillStyle = "#6f6258";
+    ctx.font =
+      "18px Arial, sans-serif";
+
+    ctx.fillText(
+      "Keep this QR safe.",
+      canvas.width / 2,
+      970
+    );
+
+    ctx.fillText(
+      "Anyone with this QR can open the letter.",
+      canvas.width / 2,
+      1000
+    );
+
+    // Download PNG
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          URL.revokeObjectURL(url);
+          return;
+        }
 
         const downloadUrl =
           URL.createObjectURL(blob);
@@ -193,7 +258,8 @@ export default function Home() {
           document.createElement("a");
 
         link.href = downloadUrl;
-        link.download = `secret-letter-${letterCode}.png`;
+        link.download =
+          `secret-letter-${letterCode}.png`;
 
         document.body.appendChild(link);
         link.click();
@@ -201,12 +267,18 @@ export default function Home() {
 
         URL.revokeObjectURL(downloadUrl);
         URL.revokeObjectURL(url);
-      }, "image/png");
-    };
+      },
+      "image/png"
+    );
+  };
 
-    image.src = url;
-  }
+  image.onerror = () => {
+    URL.revokeObjectURL(url);
+  };
 
+  image.src = url;
+}
+  
   return (
     <main className="site">
       <style jsx global>{`
